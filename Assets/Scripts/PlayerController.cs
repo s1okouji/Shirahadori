@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Shirahadori
@@ -94,11 +92,6 @@ namespace Shirahadori
                 animator.SetTrigger("Wait");
                 _state = State.Wait;
             }
-        }
-
-        private bool IsCatchingTarget()
-        {
-            return true;
         }
     }
 }
