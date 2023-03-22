@@ -30,8 +30,8 @@ namespace Shirahadori {
 
         private void Awake()
         {
-            OnStartGame += _OnStartGame;
-            stopwatch = new Stopwatch();
+            /*OnStartGame += _OnStartGame;
+            stopwatch = new Stopwatch();*/
         }
         // Start is called before the first frame update
         void Start()
@@ -46,9 +46,9 @@ namespace Shirahadori {
 
         private void _OnStartGame()
         {
-            stopwatch.Reset();
+            /*stopwatch.Reset();
             playing = true;
-            stopwatch.Start();
+            stopwatch.Start();*/
         }
 
         public void StartGame()
@@ -79,16 +79,16 @@ namespace Shirahadori {
             {
                 Miss();
             }
-            var record = new Record();
-            record.actionTiming = (float)stopwatch.Elapsed.TotalSeconds;
+            /*var record = new Record();
+            record.actionTiming = (float)stopwatch.Elapsed.TotalSeconds;*/
             StartCoroutine(DelayCoroutine(1, () => {
                 Debug.Log("Start Replay");
                 playing = false;
-                stopwatch.Stop();
-                record.endTiming = (float)stopwatch.Elapsed.TotalSeconds;
+                /*stopwatch.Stop();*/
+                /*record.endTiming = (float)stopwatch.Elapsed.TotalSeconds;*/
                 OnEndGame();
             }));
-            StartCoroutine(DelayCoroutine(1.5f, () => StartReplay(record)));
+            StartCoroutine(DelayCoroutine(1.5f, () => StartReplay()));
         }
 
         public void RestartGame()
@@ -105,7 +105,7 @@ namespace Shirahadori {
             OnEndGame?.Invoke();
         }
 
-        public void StartReplay(Record record)
+        public void StartReplay()
         {
             /*OnStartReplay?.Invoke(record);*/
             OnStartReplay?.Invoke();

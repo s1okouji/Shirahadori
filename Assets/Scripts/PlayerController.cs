@@ -19,6 +19,7 @@ namespace Shirahadori
         }
 
         private State _state;
+        private Record record;
 
         new private void Awake()
         {
@@ -34,6 +35,7 @@ namespace Shirahadori
         // Start is called before the first frame update
         void Start()
         {
+            record = new Record(gameManager);
         }
 
         // Update is called once per frame
@@ -49,53 +51,48 @@ namespace Shirahadori
         }
 
         public override void OnStartGame()
-        {
-            Debug.Log("OnStartGame");
+        {            
             playing = true;
         }
 
         public override void OnAction()
-        {
-            base.OnAction();
+        {            
             animator.SetTrigger("Catch");
             _state = State.Catch;
         }
 
         public override void OnStartReplay()
         {
-            base.OnStartReplay();
+            StartCoroutine(DelayCoroutine(record.actionTiming, () => gameManager.OnAction()));
+            StartCoroutine(DelayCoroutine(record.endTiming, () => gameManager.OnEndReplay()));
         }
 
         public override void OnReset()
         {
-            base.OnReset();
-            if (_state == State.Catch)
-            {
-                animator.ResetTrigger("Catch");
-                animator.SetTrigger("Wait");
-                _state = State.Wait;
-            }
+            _Reset();
         }
 
         public override void OnEndGame()
         {
-            base.OnEndGame();
+            _Reset();
+            playing = false;
+        }
+        
+        public void OnEndCatchMotion()
+        {            
+            if (playing)
+            {
+                gameManager.Judge();                
+            }
+        }
+
+        private void _Reset()
+        {
             if (_state == State.Catch)
             {
                 animator.ResetTrigger("Catch");
                 animator.SetTrigger("Wait");
                 _state = State.Wait;
-            }
-        }
-
-        // TODO: End Catch Motion
-        public void OnEndCatchMotion()
-        {
-            Debug.Log("OnEndCatchMotion");
-            if (playing)
-            {
-                gameManager.Judge();
-                playing = false;
             }
         }
 

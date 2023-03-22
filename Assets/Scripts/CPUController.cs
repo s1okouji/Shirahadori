@@ -39,37 +39,28 @@ namespace Shirahadori {
         public override void OnStartGame()
         {
             playing = true;
-            animator.SetTrigger("Action");
-            _state = State.Action;
+            _Start();
         }
 
         public override void OnStartReplay()
-        {
-            base.OnStartReplay();
-            animator.SetTrigger("Action");
-            _state = State.Action;
+        {            
+            _Start();
         }
 
         public override void OnEndGame()
-        {
-            animator.ResetTrigger("Action");
-            animator.SetTrigger("Idle");
-            _state = State.Idle;
+        {            
             animator.speed = 1;
+            _Reset();
         }
 
         public override void OnAction()
-        {
-            base.OnAction();
+        {            
             animator.speed = 0;
         }
 
         public override void OnReset()
-        {
-            base.OnReset();
-            animator.ResetTrigger("Action");
-            animator.SetTrigger("Idle");
-            _state = State.Idle;
+        {            
+            _Reset();
             animator.speed = 1;
         }
 
@@ -81,6 +72,20 @@ namespace Shirahadori {
         private void OnEnd()
         {
 
+        }
+
+        private void _Reset()
+        {
+            animator.ResetTrigger("Action");
+            animator.SetTrigger("Idle");
+            _state = State.Idle;
+        }
+
+        private void _Start()
+        {
+            animator.ResetTrigger("Idle");
+            animator.SetTrigger("Action");
+            _state = State.Action;
         }
     }
 }

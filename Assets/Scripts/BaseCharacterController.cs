@@ -65,17 +65,17 @@ namespace Shirahadori {
         // In game, this method called by gameManager.OnAction();
         public virtual void OnAction()
         {
-            if (!replaying)
+            /*if (!replaying)
             {
                 stopwatch.Stop();
                 _replay.actionTiming = (float)stopwatch.Elapsed.TotalSeconds;
                 _replay.endTiming = _replay.actionTiming + 1;
-            }
+            }*/
         }
 
         public virtual void OnStartAction()
         {
-            if (!replaying)
+            /*if (!replaying)
             {
                 stopwatch.Start();
                 _replay = new Record();
@@ -84,13 +84,13 @@ namespace Shirahadori {
             {
                 StartCoroutine(DelayCoroutine(_replay.actionTiming, () => { OnAction(); }));
                 StartCoroutine(DelayCoroutine(_replay.endTiming, () => { gameManager.EndReplay(); }));
-            }
+            }*/
         }
 
         public virtual void OnReset()
         {
-            _replay = null;
-            stopwatch.Reset();
+            /*_replay = null;
+            stopwatch.Reset();*/
         }
 
         protected void Replay()
@@ -117,7 +117,7 @@ namespace Shirahadori {
             }));
         }
 
-        private IEnumerator DelayCoroutine(float seconds, UnityAction action)
+        protected IEnumerator DelayCoroutine(float seconds, UnityAction action)
         {
             yield return new WaitForSeconds(seconds);
             action?.Invoke();
