@@ -13,6 +13,7 @@ namespace Shirahadori {
         public UnityAction OnAction;
         public UnityAction OnEndReplay;
         public UnityAction OnEndGame;
+        public UnityAction OnEndAction;
         public UnityAction OnClear;
         public UnityAction OnMiss;
         public UnityAction OnReset;
@@ -25,6 +26,11 @@ namespace Shirahadori {
         {
             OnStartGame?.Invoke();
             Debug.Log("StartGame");
+        }
+
+        public void EndAction()
+        {
+            OnEndAction?.Invoke();
         }
 
         public void StartAction()

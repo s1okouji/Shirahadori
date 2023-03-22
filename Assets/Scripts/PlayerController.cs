@@ -8,6 +8,7 @@ namespace Shirahadori
     {
 
         private bool playing = false;
+        private bool pass = false;
         private Animator animator;
 
         private enum State
@@ -41,7 +42,7 @@ namespace Shirahadori
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                if (playing)
+                if (playing && !pass)
                 {
                     gameManager.OnAction();
                 }
@@ -51,6 +52,7 @@ namespace Shirahadori
         public override void OnStartGame()
         {            
             playing = true;
+            pass = false;
         }
 
         public override void OnAction()
@@ -59,9 +61,27 @@ namespace Shirahadori
             _state = State.Catch;
         }
 
+        public override void OnEndAction()
+        {
+            if(_state == State.Wait)
+            {
+                pass = true;
+                Judge();
+            }
+        }
+
         public override void OnStartReplay()
         {
-            StartCoroutine(DelayCoroutine(record.actionTiming, () => gameManager.OnAction()));
+            StartCoroutine(DelayCoroutine(record.actionTiming, () => {
+                if (record.pass)
+                {
+                    gameManager.OnEndAction();
+                }
+                else
+                {
+                    gameManager.OnAction();
+                }                                    
+                }));
             StartCoroutine(DelayCoroutine(record.endTiming, () => gameManager.OnEndReplay()));
         }
 
@@ -77,10 +97,15 @@ namespace Shirahadori
         }
         
         public void OnEndCatchMotion()
-        {            
+        {
+            Judge();
+        }
+
+        private void Judge()
+        {
             if (playing)
             {
-                gameManager.Judge();                
+                gameManager.Judge();
             }
         }
 

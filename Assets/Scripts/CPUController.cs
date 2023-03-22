@@ -4,10 +4,10 @@ using UnityEngine;
 namespace Shirahadori {
     public class CPUController : BaseCharacterController
     {
-
-        private bool playing = false;
+        
         private Animator animator;
         private State _state;
+        private float speed = 1;
 
         private enum State
         {
@@ -30,16 +30,13 @@ namespace Shirahadori {
         {
             animator = GetComponent<Animator>();
             _state = State.Idle;
-        }
-
-        private void Start()
-        {
-        }
+        }        
 
         public override void OnStartGame()
-        {
-            playing = true;
+        {            
             _Start();
+            var randomValue = Random.value;
+            speed = 0.8f + randomValue;      // 0.8f <= speed <= 1.8f
         }
 
         public override void OnStartReplay()
@@ -49,33 +46,42 @@ namespace Shirahadori {
 
         public override void OnEndGame()
         {            
-            animator.speed = 1;
             _Reset();
         }
 
         public override void OnAction()
-        {            
-            animator.speed = 0;
+        {
+            StopAnimation();
         }
 
         public override void OnReset()
         {            
-            _Reset();
-            animator.speed = 1;
+            _Reset();            
         }
 
-        private void OnChangeVelocity()
+        public void ChangeVelocity()
         {
-
+            animator.speed = speed;
         }
 
-        private void OnEnd()
+        public void EndAction()
         {
+            gameManager.OnEndAction();
+        }
 
+        public override void OnEndAction()
+        {
+            StopAnimation();
+        }
+
+        private void StopAnimation()
+        {
+            animator.speed = 0;
         }
 
         private void _Reset()
         {
+            animator.speed = 1;
             animator.ResetTrigger("Action");
             animator.SetTrigger("Idle");
             _state = State.Idle;

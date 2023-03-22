@@ -20,7 +20,8 @@ namespace Shirahadori {
             gameManager.OnEndReplay += OnEndReplay;
             gameManager.OnReset += OnReset;
             gameManager.OnEndGame += OnEndGame;
-            gameManager.OnStartAction += OnStartAction;            
+            gameManager.OnStartAction += OnStartAction;
+            gameManager.OnEndAction += OnEndAction;
         }        
         
         public virtual void OnStartGame()
@@ -56,6 +57,11 @@ namespace Shirahadori {
         public virtual void OnReset()
         {
            
+        }
+
+        public virtual void OnEndAction()
+        {
+
         }
 
         protected IEnumerator DelayCoroutine(float seconds, UnityAction action)

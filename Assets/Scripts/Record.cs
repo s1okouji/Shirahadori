@@ -4,16 +4,18 @@ namespace Shirahadori
 {
     public class Record
     {
-        public float actionTiming { get; set; }
-        public float endTiming { get; set; }
+        public float actionTiming { set; get; }
+        public float endTiming { set; get; }
+        public bool pass { set; get; } = false;
 
-        private Stopwatch stopwatch;        
+        private Stopwatch stopwatch;
 
         public Record(GameManager gameManager)
         {
             stopwatch = new Stopwatch();            
             gameManager.OnAction += OnAction;
             gameManager.OnStartAction += OnStartAction;
+            gameManager.OnEndAction += OnEndAction;
             gameManager.OnReset += OnReset;
         }
 
@@ -24,14 +26,26 @@ namespace Shirahadori
 
         private void OnAction()
         {
-            var time = (float)stopwatch.Elapsed.TotalSeconds;
-            actionTiming = time;
-            endTiming = time + 1.0f;
+            pass = false;
+            SetTiming();
+        }        
+
+        private void OnEndAction()
+        {
+            pass = true;
+            SetTiming();
         }
 
         private void OnReset()
         {
             stopwatch.Reset();
+        }
+
+        private void SetTiming()
+        {
+            var time = (float)stopwatch.Elapsed.TotalSeconds;
+            actionTiming = time;
+            endTiming = time + 1.0f;
         }
     }
 }
