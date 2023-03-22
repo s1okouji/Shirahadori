@@ -18,6 +18,10 @@ namespace Shirahadori
         private Button _buttonStart;
         private Button _buttonRestart;
 
+#if UNITY_STANDALONE_WIN
+        private Button _buttonQuit;
+#endif
+
         // Start is called before the first frame update
         void Start()
         {
@@ -29,6 +33,14 @@ namespace Shirahadori
 
             _buttonStart.clicked += StartGame;
             _buttonRestart.clicked += RestartGame;
+
+#if UNITY_STANDALONE_WIN
+            Debug.Log("Windows");
+            _buttonQuit = root.Q<Button>("Quit");
+            _buttonQuit.style.display = DisplayStyle.None;
+            _buttonQuit.clicked += Quit;
+#endif
+
             RegisterCallBack();
         }
 
@@ -74,6 +86,9 @@ namespace Shirahadori
         {
             var button = root.Q<Button>("Restart");
             button.style.display = DisplayStyle.Flex;
+#if UNITY_STANDALONE_WIN
+            _buttonQuit.style.display = DisplayStyle.Flex;
+#endif
         }
 
         private void OnReset()
@@ -84,6 +99,17 @@ namespace Shirahadori
             clear.visible = false;
             var button = root.Q<Button>("Restart");
             button.style.display = DisplayStyle.None;
+#if UNITY_STANDALONE_WIN
+            _buttonQuit.style.display = DisplayStyle.None;
+#endif
+
         }
+
+#if UNITY_STANDALONE_WIN
+        private void Quit()
+        {
+            Application.Quit();
+        }
+#endif
     }
 }
