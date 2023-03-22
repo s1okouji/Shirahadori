@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Shirahadori
@@ -10,6 +8,7 @@ namespace Shirahadori
     {
 
         private bool playing = false;
+        private bool pass = false;
         private Animator animator;
 
         private enum State
@@ -19,6 +18,7 @@ namespace Shirahadori
         }
 
         private State _state;
+        private Record record;
 
         new private void Awake()
         {
@@ -34,6 +34,7 @@ namespace Shirahadori
         // Start is called before the first frame update
         void Start()
         {
+            record = new Record(gameManager);
         }
 
         // Update is called once per frame
@@ -41,7 +42,7 @@ namespace Shirahadori
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                if (playing)
+                if (playing && !pass)
                 {
                     gameManager.OnAction();
                 }
@@ -49,59 +50,73 @@ namespace Shirahadori
         }
 
         public override void OnStartGame()
-        {
-            Debug.Log("OnStartGame");
+        {            
             playing = true;
+            pass = false;
         }
 
         public override void OnAction()
-        {
-            base.OnAction();
+        {            
             animator.SetTrigger("Catch");
             _state = State.Catch;
         }
 
+        public override void OnEndAction()
+        {
+            if(_state == State.Wait)
+            {
+                pass = true;
+                Judge();
+            }
+        }
+
         public override void OnStartReplay()
         {
-            base.OnStartReplay();
+            StartCoroutine(DelayCoroutine(record.actionTiming, () => {
+                if (record.pass)
+                {
+                    gameManager.OnEndAction();
+                }
+                else
+                {
+                    gameManager.OnAction();
+                }                                    
+                }));
+            StartCoroutine(DelayCoroutine(record.endTiming, () => gameManager.OnEndReplay()));
         }
 
         public override void OnReset()
         {
-            base.OnReset();
-            if (_state == State.Catch)
-            {
-                animator.ResetTrigger("Catch");
-                animator.SetTrigger("Wait");
-                _state = State.Wait;
-            }
+            _Reset();
         }
 
         public override void OnEndGame()
         {
-            base.OnEndGame();
+            _Reset();
+            playing = false;
+        }
+        
+        public void OnEndCatchMotion()
+        {
+            Judge();
+        }
+
+        private void Judge()
+        {
+            if (playing)
+            {
+                gameManager.Judge();
+            }
+        }
+
+        private void _Reset()
+        {
             if (_state == State.Catch)
             {
                 animator.ResetTrigger("Catch");
                 animator.SetTrigger("Wait");
                 _state = State.Wait;
             }
-        }
-
-        // TODO: End Catch Motion
-        public void OnEndCatchMotion()
-        {
-            Debug.Log("OnEndCatchMotion");
-            if (playing)
-            {
-                gameManager.Judge();
-                playing = false;
-            }
-        }
-
-        private bool IsCatchingTarget()
-        {
-            return true;
         }
     }
 }

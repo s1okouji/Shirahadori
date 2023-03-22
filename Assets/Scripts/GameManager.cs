@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Diagnostics;
@@ -9,52 +8,29 @@ namespace Shirahadori {
     public class GameManager : MonoBehaviour
     {
         public UnityAction OnStartGame;
-        public UnityAction OnStartReplay;
-        /*public delegate void onStartReplay(Record record);
-        public onStartReplay OnStartReplay;*/
+        public UnityAction OnStartReplay;        
 
         public UnityAction OnAction;
         public UnityAction OnEndReplay;
         public UnityAction OnEndGame;
+        public UnityAction OnEndAction;
         public UnityAction OnClear;
         public UnityAction OnMiss;
         public UnityAction OnReset;
         public UnityAction OnStartAction;
 
         [SerializeField]
-        private TargetObject target;
-
-        private float oneGameTime = 0f;
-        private bool playing = false;
-        private Stopwatch stopwatch;
-
-        private void Awake()
-        {
-            OnStartGame += _OnStartGame;
-            stopwatch = new Stopwatch();
-        }
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {           
-        }        
-
-        private void _OnStartGame()
-        {
-            stopwatch.Reset();
-            playing = true;
-            stopwatch.Start();
-        }
+        private TargetObject target;                      
 
         public void StartGame()
         {
             OnStartGame?.Invoke();
             Debug.Log("StartGame");
+        }
+
+        public void EndAction()
+        {
+            OnEndAction?.Invoke();
         }
 
         public void StartAction()
@@ -78,25 +54,18 @@ namespace Shirahadori {
             else
             {
                 Miss();
-            }
-            var record = new Record();
-            record.actionTiming = (float)stopwatch.Elapsed.TotalSeconds;
-            StartCoroutine(DelayCoroutine(1, () => {
-                Debug.Log("Start Replay");
-                playing = false;
-                stopwatch.Stop();
-                record.endTiming = (float)stopwatch.Elapsed.TotalSeconds;
+            }            
+            StartCoroutine(DelayCoroutine(1, () => { 
                 OnEndGame();
             }));
-            StartCoroutine(DelayCoroutine(1.5f, () => StartReplay(record)));
+            StartCoroutine(DelayCoroutine(1.5f, () => StartReplay()));
         }
 
         public void RestartGame()
         {
             Debug.Log("RestartGame");
             OnReset?.Invoke();
-            StartCoroutine(DelayCoroutine(0.5f, () => { StartGame(); }));
-            /*StartGame();*/
+            StartCoroutine(DelayCoroutine(0.5f, () => { StartGame(); }));            
         }
 
         public void EndGame()
@@ -105,9 +74,8 @@ namespace Shirahadori {
             OnEndGame?.Invoke();
         }
 
-        public void StartReplay(Record record)
-        {
-            /*OnStartReplay?.Invoke(record);*/
+        public void StartReplay()
+        {            
             OnStartReplay?.Invoke();
         }
 
